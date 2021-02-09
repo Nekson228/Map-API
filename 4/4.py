@@ -1,5 +1,4 @@
 import sys
-import os
 
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow
@@ -7,17 +6,14 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import requests
 
-
 COORDINATES = '50.003193, 36.329676'
-spn = [0.01, 0.01]
-ll = [float(i) for i in ''.join(COORDINATES.split()).split(',')]
 
 
-def search_func():  # Функция поиска
+def search_func(ll, spn, map_type):  # Функция поиска
     map_params = {
         "ll": ','.join([str(ll[1]), str(ll[0])]),
         'spn': ','.join(map(str, spn)),
-        "l": "map"
+        "l": map_type
     }  # Формирование запроса
 
     map_api_server = "http://static-maps.yandex.ru/1.x/"
@@ -32,32 +28,42 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('main.ui', self)
+
+        self.current_type = 'map'
+        self.spn = [0.01, 0.01]
+        self.ll = [float(i) for i in ''.join(COORDINATES.split()).split(',')]
+
+        self.type_box.currentIndexChanged.connect(self.change_type)
+        self.search()
+
+    def change_type(self):
+        self.current_type = self.type_box.currentText().split(', ')[1]
         self.search()
 
     def search(self):
-        pixmap = QPixmap(search_func())
+        pixmap = QPixmap(search_func(self.ll, self.spn, self.current_type))
         self.map_image.setPixmap(pixmap)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            spn[0] += 0.005
-            spn[1] += 0.005
+            self.spn[0] += 0.005
+            self.spn[1] += 0.005
             self.search()
         if event.key() == Qt.Key_PageDown:
-            spn[0] -= 0.005
-            spn[1] -= 0.005
+            self.spn[0] -= 0.005
+            self.spn[1] -= 0.005
             self.search()
         if event.key() == Qt.Key_Up:
-            ll[0] += spn[0]
+            self.ll[0] += self.spn[0]
             self.search()
         if event.key() == Qt.Key_Down:
-            ll[0] -= spn[0]
+            self.ll[0] -= self.spn[0]
             self.search()
         if event.key() == Qt.Key_Right:
-            ll[1] += spn[1]
+            self.ll[1] += self.spn[1]
             self.search()
         if event.key() == Qt.Key_Left:
-            ll[1] -= spn[1]
+            self.ll[1] -= self.spn[1]
             self.search()
 
 
