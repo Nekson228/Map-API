@@ -6,12 +6,15 @@ from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 import requests
 
+COORDINATES = '50.003193, 36.329676'
+spn = [0.01, 0.01]
 
-def search_func(coordinates, zoom):  # Функция поиска
+
+def search_func(coordinates):  # Функция поиска
     coordinates = ''.join(coordinates.split()).split(',')  # разбивка координат
     map_params = {
         "ll": ','.join([coordinates[1], coordinates[0]]),
-        "z": int(zoom),
+        'spn': ','.join(map(str, spn)),
         "l": "map"
     }  # Формирование запроса
 
@@ -27,29 +30,21 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('main.ui', self)
-        self.search_button.clicked.connect(self.search)
+        self.search()
+
+    def search(self):
+        pixmap = QPixmap(search_func(COORDINATES))
+        self.map_image.setPixmap(pixmap)
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            zoom = self.zoom_slider.value()
-            zoom += 1
-            zoom = zoom if zoom < 20 else 20
-            self.zoom_slider.setValue(zoom)
+            spn[0] += 0.005
+            spn[1] += 0.005
             self.search()
         if event.key() == Qt.Key_PageDown:
-            zoom = self.zoom_slider.value()
-            zoom -= 1
-            zoom = zoom if zoom > 0 else 0
-            self.zoom_slider.setValue(zoom)
+            spn[0] -= 0.005
+            spn[1] -= 0.005
             self.search()
-
-    def search(self):
-        coords = self.coords_input.text()
-        if not coords:
-            return
-        zoom = self.zoom_slider.value()
-        pixmap = QPixmap(search_func(coords, zoom))
-        self.map_image.setPixmap(pixmap)
 
 
 if __name__ == '__main__':

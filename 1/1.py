@@ -6,14 +6,14 @@ from PyQt5.QtGui import QPixmap
 import requests
 
 COORDINATES = '50.003193, 36.329676'
-SPN = [0.005, 0.005]
+spn = [0.005, 0.005]
 
 
 def search_func(coordinates):  # Функция поиска
     coordinates = ''.join(coordinates.split()).split(',')  # разбивка координат
     map_params = {
         "ll": ','.join([coordinates[1], coordinates[0]]),
-        'spn': ','.join(map(str, SPN)),
+        'spn': ','.join(map(str, spn)),
         "l": "map"
     }  # Формирование запроса
 
