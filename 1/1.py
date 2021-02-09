@@ -5,12 +5,15 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QPixmap
 import requests
 
+COORDINATES = '50.003193, 36.329676'
+SPN = [0.005, 0.005]
 
-def search_func(coordinates, zoom):  # Функция поиска
+
+def search_func(coordinates):  # Функция поиска
     coordinates = ''.join(coordinates.split()).split(',')  # разбивка координат
     map_params = {
         "ll": ','.join([coordinates[1], coordinates[0]]),
-        "z": int(zoom),
+        'spn': ','.join(map(str, SPN)),
         "l": "map"
     }  # Формирование запроса
 
@@ -26,15 +29,10 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('main.ui', self)
-        self.search_button.clicked.connect(self.search)
+        self.search()
 
     def search(self):
-        coords = self.coords_input.text()
-        zoom = self.zoom_slider.value()
-        print(coords, zoom)
-        # вызов функции вани
-        # вставка в лабел
-        pixmap = QPixmap(search_func(coords, zoom))
+        pixmap = QPixmap(search_func(COORDINATES))
         self.map_image.setPixmap(pixmap)
 
 
