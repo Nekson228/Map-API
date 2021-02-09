@@ -3,9 +3,7 @@ import sys
 from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QPixmap
-from io import BytesIO
 import requests
-from PIL import Image
 
 
 def search_func(coordinates, zoom):  # Функция поиска
