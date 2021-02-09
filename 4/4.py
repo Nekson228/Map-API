@@ -1,3 +1,4 @@
+import os
 import sys
 
 from PyQt5 import uic
@@ -46,12 +47,12 @@ class Window(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            self.spn[0] += 0.005
-            self.spn[1] += 0.005
+            self.spn[0] /= 2
+            self.spn[1] /= 2
             self.search()
         if event.key() == Qt.Key_PageDown:
-            self.spn[0] -= 0.005
-            self.spn[1] -= 0.005
+            self.spn[0] *= 2
+            self.spn[1] *= 2
             self.search()
         if event.key() == Qt.Key_Up:
             self.ll[0] += self.spn[0]
@@ -65,6 +66,9 @@ class Window(QMainWindow):
         if event.key() == Qt.Key_Left:
             self.ll[1] -= self.spn[1]
             self.search()
+
+    def closeEvent(self, event):
+        os.remove('map.png')
 
 
 if __name__ == '__main__':

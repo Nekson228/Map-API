@@ -40,12 +40,12 @@ class Window(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            spn[0] += 0.005
-            spn[1] += 0.005
+            spn[0] /= 2
+            spn[1] /= 2
             self.search()
         if event.key() == Qt.Key_PageDown:
-            spn[0] -= 0.005
-            spn[1] -= 0.005
+            spn[0] *= 2
+            spn[1] *= 2
             self.search()
         if event.key() == Qt.Key_Up:
             ll[0] += spn[0]
@@ -59,6 +59,9 @@ class Window(QMainWindow):
         if event.key() == Qt.Key_Left:
             ll[1] -= spn[1]
             self.search()
+
+    def closeEvent(self, event):
+        os.remove('map.png')
 
 
 if __name__ == '__main__':
