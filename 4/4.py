@@ -38,7 +38,7 @@ class Window(QMainWindow):
         self.search()
 
     def change_type(self):
-        self.current_type = self.type_box.currentText().split(', ')[1]
+        self.current_type = self.type_box.currentText().split(' - ')[1]
         self.search()
 
     def search(self):

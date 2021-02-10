@@ -40,17 +40,17 @@
         </property>
         <item>
          <property name="text">
-          <string>Схематическое изображение, map</string>
+          <string>Схематическое изображение - map</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Спутниковое изображение, sat</string>
+          <string>Спутниковое изображение - sat</string>
          </property>
         </item>
         <item>
          <property name="text">
-          <string>Гибридное изображение, skl</string>
+          <string>Гибридное изображение - sat,skl</string>
          </property>
         </item>
        </widget>

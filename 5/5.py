@@ -23,7 +23,7 @@ class Window(QMainWindow):
         self.search_button.clicked.connect(self.search)
 
     def change_type(self):
-        self.current_type = self.type_box.currentText().split(', ')[1]
+        self.current_type = self.type_box.currentText().split(' - ')[1]
         self.search()
 
     def search(self):
@@ -38,7 +38,11 @@ class Window(QMainWindow):
             response = requests.get(geocoder_request, params=parameters)
             json_response = response.json()
 
-            toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+            try:
+                toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+            except IndexError:
+                self.statusBar().showMessage('Ничего не найдено')
+                return
             toponym_coodrinates = toponym["Point"]["pos"]
             self.ll = list(map(float, toponym_coodrinates.split()))
             self.original_point = self.ll.copy()
