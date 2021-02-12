@@ -80,14 +80,14 @@ class Window(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            if spn != [0.00015625, 0.00015625]:
-                spn[0] /= 2
-                spn[1] /= 2
+            if self.spn != [0.00015625, 0.00015625]:
+                self.spn[0] /= 2
+                self.spn[1] /= 2
                 self.search()
         if event.key() == Qt.Key_PageDown:
-            if spn != [81.92, 81.92]:
-                spn[0] *= 2
-                spn[1] *= 2
+            if self.spn != [81.92, 81.92]:
+                self.spn[0] *= 2
+                self.spn[1] *= 2
                 self.search()
         if event.key() == Qt.Key_Up:
             self.ll[1] += self.spn[1]

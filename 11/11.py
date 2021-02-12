@@ -5,6 +5,7 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
+from PyQt5 import QtGui
 import requests
 
 SIZE = [600, 450]
@@ -14,6 +15,7 @@ class Window(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi('main.ui', self)
+        self.setMouseTracking(True)
 
         self.current_type = 'map'
         self.spn = [0.01, 0.01]
@@ -21,6 +23,7 @@ class Window(QMainWindow):
         self.current_address = None
         self.original_point = None
         self.current_toponym_data = None
+        self.mouse_pos = None
 
         self.type_box.currentIndexChanged.connect(self.change_type)
         self.search_button.clicked.connect(self.search)
@@ -93,15 +96,20 @@ class Window(QMainWindow):
             file.write(response.content)
         return map_file
 
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
+        print(event.pos())
+
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            self.spn[0] /= 2
-            self.spn[1] /= 2
-            self.search()
+            if self.spn != [0.00015625, 0.00015625]:
+                self.spn[0] /= 2
+                self.spn[1] /= 2
+                self.search()
         if event.key() == Qt.Key_PageDown:
-            self.spn[0] *= 2
-            self.spn[1] *= 2
-            self.search()
+            if self.spn != [81.92, 81.92]:
+                self.spn[0] *= 2
+                self.spn[1] *= 2
+                self.search()
         if event.key() == Qt.Key_Up:
             self.ll[1] += self.spn[1]
             self.search()
