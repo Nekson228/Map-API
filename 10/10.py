@@ -27,7 +27,8 @@ class Window(QMainWindow):
 
     def change_type(self):
         self.current_type = self.type_box.currentText().split(' - ')[1]
-        self.search()
+        if self.adress_input.text():
+            self.search()
 
     def change_address(self, state):
         if self.current_toponym_data:

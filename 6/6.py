@@ -24,7 +24,8 @@ class Window(QMainWindow):
 
     def change_type(self):
         self.current_type = self.type_box.currentText().split(' - ')[1]
-        self.search()
+        if self.adress_input.text():
+            self.search()
 
     def search(self):
         if self.current_address != self.adress_input.text() or not self.ll:

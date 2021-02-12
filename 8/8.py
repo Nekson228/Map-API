@@ -25,7 +25,8 @@ class Window(QMainWindow):
 
     def change_type(self):
         self.current_type = self.type_box.currentText().split(' - ')[1]
-        self.search()
+        if self.adress_input.text():
+            self.search()
 
     def reset(self):
         self.map_image.clear()
