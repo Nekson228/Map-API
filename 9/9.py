@@ -8,6 +8,11 @@ from PyQt5.QtCore import Qt
 import requests
 
 
+def lonlat_size(lower, upper):
+    lower, upper = list(map(float, lower.split())), list(map(float, upper.split()))
+    return [abs(lower[0] - upper[0]), abs(lower[1] - upper[1])]
+
+
 class Window(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -33,36 +38,40 @@ class Window(QMainWindow):
         self.statusBar().clearMessage()
 
     def search(self):
-        if self.current_address != self.adress_input.text() or not self.ll:
-            parameters = {
-                'apikey': '40d1649f-0493-4b70-98ba-98533de7710b',
-                'geocode': self.adress_input.text(),
-                'format': 'json'
-            }
-            geocoder_request = f"http://geocode-maps.yandex.ru/1.x/"
+        if self.adress_input.text():
+            if self.current_address != self.adress_input.text() or not self.ll:
+                parameters = {
+                    'apikey': '40d1649f-0493-4b70-98ba-98533de7710b',
+                    'geocode': self.adress_input.text(),
+                    'format': 'json'
+                }
+                geocoder_request = f"http://geocode-maps.yandex.ru/1.x/"
 
-            response = requests.get(geocoder_request, params=parameters)
-            json_response = response.json()
-            try:
-                toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
-            except IndexError:
-                self.statusBar().showMessage('Ничего не найдено')
-                return
-            toponym_coodrinates = toponym["Point"]["pos"]
-            toponym_data = toponym['metaDataProperty']['GeocoderMetaData']
-            if self.show_postal_code.isChecked():
+                response = requests.get(geocoder_request, params=parameters)
+                json_response = response.json()
                 try:
-                    self.statusBar().showMessage(f"{toponym_data['text']} "
-                                                 f"{toponym_data['Address']['postal_code']}")
-                except KeyError:
+                    toponym = json_response["response"]["GeoObjectCollection"]["featureMember"][0]["GeoObject"]
+                except IndexError:
+                    self.statusBar().showMessage('Ничего не найдено')
+                    return
+                toponym_coodrinates = toponym["Point"]["pos"]
+                toponym_data = toponym['metaDataProperty']['GeocoderMetaData']
+                if self.show_postal_code.isChecked():
+                    try:
+                        self.statusBar().showMessage(f"{toponym_data['text']} "
+                                                     f"{toponym_data['Address']['postal_code']}")
+                    except KeyError:
+                        self.statusBar().showMessage(f"{toponym_data['text']}")
+                else:
                     self.statusBar().showMessage(f"{toponym_data['text']}")
-            else:
-                self.statusBar().showMessage(f"{toponym_data['text']}")
-            self.ll = list(map(float, toponym_coodrinates.split()))
-            self.original_point = self.ll.copy()
-            self.current_address = self.adress_input.text()
-        pixmap = QPixmap(self.search_func())
-        self.map_image.setPixmap(pixmap)
+                self.ll = list(map(float, toponym_coodrinates.split()))
+                self.original_point = self.ll.copy()
+                self.current_address = self.adress_input.text()
+
+                toponym_bbox = toponym['boundedBy']['Envelope']
+                self.spn = lonlat_size(toponym_bbox['lowerCorner'], toponym_bbox['upperCorner'])
+            pixmap = QPixmap(self.search_func())
+            self.map_image.setPixmap(pixmap)
 
     def search_func(self):  # Функция поиска
         map_params = {
@@ -81,12 +90,12 @@ class Window(QMainWindow):
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageUp:
-            if self.spn != [0.00015625, 0.00015625]:
+            if self.spn[0] > 0.0002 and self.spn[1] > 0.0002:
                 self.spn[0] /= 2
                 self.spn[1] /= 2
                 self.search()
         if event.key() == Qt.Key_PageDown:
-            if self.spn != [81.92, 81.92]:
+            if self.spn[0] < 62.5 and self.spn[1] < 62.5:
                 self.spn[0] *= 2
                 self.spn[1] *= 2
                 self.search()
